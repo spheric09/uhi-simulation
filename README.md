@@ -64,11 +64,11 @@ method development in urban climate analysis.
 
 ### Thermal Modeling Engine
 
-- Discrete heat diffusion solver
+- flux based conduction model
+- heat transfer due to solar insolation, conduction, radiation, and evaporation
 - Material-dependent conductivity and heat capacity
 - Explicit time integration
-- Stability-controlled stepping
-- Boundary-aware propagation
+- effective conductivity between material boundaries
 
 ### Solar Forcing System
 
@@ -91,7 +91,6 @@ method development in urban climate analysis.
 - Material classification layers
 - Statistical overlays (min/max/mean)
 - Multi-mode rendering
-- Exportable screenshots
 
 ---
 
@@ -161,7 +160,15 @@ Where:
 - `α` is material diffusivity
 - `S` is solar forcing
 
-Implemented using explicit finite differences.
+Implemented using explicit finite differences:
+
+Temperature is updated using an explicit energy balance:
+
+C dT/dt = Qcond + Qsolar - Qrad - Qevap
+
+where C is the effective heat capacity per cell.
+
+
 
 ### Solar Forcing
 
@@ -186,7 +193,6 @@ A typical modeling workflow:
 5. Configure simulation parameters
 6. Run time evolution
 7. Analyze temperature fields
-8. Export results
 
 This supports rapid experimentation and scenario comparison.
 
@@ -207,13 +213,25 @@ Current limitations include:
 
 - Two-dimensional representation
 
-- No explicit building geometry
+- No vertical building geometry or shadowing
 
 - No radiative surface exchange
 
 - No turbulent heat flux modeling
 
 - Simplified atmospheric coupling
+
+- Simplified solar insolation
+
+- Not considering sublayers
+
+- Does not account for humidity, cloud cover, rainfall
+  
+- Time step stability and classification currently rely on manual tuning.
+
+- Boundaries of the grid are currently ignored
+
+- Evapotranspiration factor is oversimplified
 
 The system prioritizes interpretability and interactivity over
 full-scale physical fidelity.
@@ -226,7 +244,9 @@ Planned extensions:
 
 - Wind advection modeling
 
-- Radiative balance integration
+- account for ambient air temp
+
+- account for sky emissivity
 
 - Diffusion stability limit for discrete timesteps
 
@@ -238,10 +258,14 @@ Planned extensions:
 
 - Enhanced analysis tools
 
+- precompute grid edges
+
+- improve this README
+
 ---
 
 ### Author
 
 Dheirya Agrawal
 2026
-Independent Research Project
+Undergraduate research project focused on urban climate modeling
