@@ -26,6 +26,32 @@ method development in urban climate analysis.
 
 ---
 
+### Map-Based Initialization
+
+![Satellite Import](screenshots/delhi_base1%20high&20res.png)
+
+### Material Classification
+
+![Material Map](screenshots/material%20map%20ss%20debug%20p3.png)
+
+### Temperature Distribution (Day-Time Heating)
+
+![12:20 Heatmap](screenshots/1220%20ss%20p3.png)
+
+![16:13 Heatmap](screenshots/1613%20ss%20p3.png)
+
+![18:40 Heatmap](screenshots/1840%20ss%20p3.png)
+
+
+### Night-Time Cooling
+
+![23:40 Heatmap](screenshots/2340%20ss%20p3.png)
+
+![02:07 Heatmap](screenshots/0207%20ss%20p3.png)
+
+
+---
+
 ## Key Capabilities
 
 ### Real-World Environment Generation
