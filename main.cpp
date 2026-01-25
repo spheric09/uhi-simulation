@@ -11,13 +11,13 @@ constexpr int GRID_W = 250; //physics grid size
 constexpr int GRID_H = 250;
 constexpr float CELL_SIZE_PX = 4.0f; //pixels per cell edge
 constexpr float phyCellSize = 4.0f; // physical edge length in meters
-constexpr float PIXELS_PER_METER = CELL_SIZE_PX / phyCellSize;
+constexpr float PIXELS_PER_METER = CELL_SIZE_PX / phyCellSize; // this is the scale
 constexpr float cellArea = phyCellSize * phyCellSize; // m^2 
 
 constexpr float DT = 5.0f;     // no. of seconds per timestep
 constexpr float DAY_LENGTH = 24 * 3600; //no. of seconds in a day
 constexpr float TIME_SCALE = 10.0f; // speed up factor
-constexpr float SOLAR = 850.0f;   // W/m^2 max solar insolation rate (incoming)
+constexpr float SOLAR = 850.0f;   // W/m^2 max solar insolation (incoming)
 constexpr float scaledDT = DT * TIME_SCALE;
 constexpr float T_MIN = 283.15f; //K
 constexpr float T_MAX = 348.15f; //K
@@ -62,15 +62,13 @@ public:
         return conductivity / (density * specificHeat);
     }
 
-    float penetrationDepth() const {
+    float penetrationDepth() const {    //thermal penetration depth
         return std::sqrt(diffusivity() * DAY_LENGTH);
     }
 
     float heatCapacity() const { //heat capacity of the cell = rho*Cp*h*A
         return density * specificHeat * penetrationDepth() * cellArea;
     }
-
-    
 
 };
 
@@ -133,7 +131,7 @@ sf::Color colorTransition(const sf::Color& ca, const sf::Color& cb, float n) {
 // temp to color mapping
 sf::Color heatColor(float T) {
     T = clamp(T, T_MIN, T_MAX); //apply bound
-    float n = (T - T_MIN) / (T_MAX - T_MIN); //normalizatio
+    float n = (T - T_MIN) / (T_MAX - T_MIN); //normalization
     n = clamp(n, 0.0f, 1.0f);
 
     const sf::Color white(255, 255, 255);
@@ -184,37 +182,31 @@ MaterialID pixelToMaterial(const sf::Color& c)
 
     int brightness = (r + g + b) / 3;
 
-    int dr = g - r;
-    int db = g - b;
-
-    int br = b - r;
-    int bg = b - g;
-
     int maxc = std::max({ r, g, b });
     int minc = std::min({ r, g, b });
     int contrast = maxc - minc;
 
-    // ---- WATER: strong blue dominance ----
+    // WATER: blue dominance
     if (b > r + 20 && b > g + 20)
         return MaterialID::Water;
 
-    // ---- VEGETATION: green wins even if dark ----
+    // VEGETATION: green overpowers a lot
     if (g > r + 30 && g > b + 30)
         return MaterialID::Vegetation;
 
-    // ---- DARK NEUTRAL = vegetation ----
+    // DARK NEUTRAL
     //if (brightness < 100 && contrast < 35 && g > r && g > b)
     //    return MaterialID::Vegetation;
 
-    // ---- BRIGHT NEUTRAL = asphalt ----
+    // road network is light colored on Google Maps
     if (brightness > 130 && contrast < 35)
         return MaterialID::Asphalt;
 
-    // ---- SHADOWED VEGETATION RECOVERY ----
-    if (brightness < 100 && g > r && g > b)
+    // since my vegetation is mostly very dark
+    if (brightness < 100 && g > r+2 && g > b+2)
         return MaterialID::Vegetation;
 
-    // ---- FALLBACK ----
+    // FALLBACK to concrete
     if (brightness < 120)
         return MaterialID::Concrete;
 
@@ -432,7 +424,7 @@ int main() {
 
                 else if (mat[i] == MaterialID::Water) {
 
-                    float evapCoeff = 0.00009f; // stronger
+                    float evapCoeff = 0.00009f; // stronger than vegetation
 
                     float evap = evapCoeff * (curSolar) * std::max(0.f, T[i] - 285.f);
 
@@ -480,16 +472,16 @@ int main() {
         );
 
         //render the new colors(temp update)
-        for (int i = 0; i < GRID_W * GRID_H; i++) {
-            sf::Color c = heatColor(T[i]); //determine temperature color of the cell
-            int v = 6 * i;
-            for (int k = 0; k < 6; k++) //apply color to all 6 vertices
-                cells[v + k].color = c;
-        }
+        //for (int i = 0; i < GRID_W * GRID_H; i++) {
+        //    sf::Color c = heatColor(T[i]); //determine temperature color of the cell
+        //    int v = 6 * i;
+        //    for (int k = 0; k < 6; k++) //apply color to all 6 vertices
+        //        cells[v + k].color = c;
+        //}
 
 
         // DEBUG: show materials
-        /*for (int i = 0; i < GRID_W * GRID_H; i++) {
+        for (int i = 0; i < GRID_W * GRID_H; i++) {
 
             sf::Color c;
 
@@ -515,7 +507,7 @@ int main() {
 
             for (int k = 0; k < 6; k++)
                 cells[v + k].color = c;
-        }*/
+        }
 
         window.clear();
         window.draw(cells);
