@@ -28,7 +28,7 @@ method development in urban climate analysis.
 
 ### Map-Based Initialization
 
-![Satellite Import](screenshots/delhi_base1%20high&20res.png)
+![Satellite Import](screenshots/delhi_base1%20high%20res.png)
 
 ### Material Classification
 
