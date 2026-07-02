@@ -266,6 +266,4 @@ Planned extensions:
 
 ### Author
 
-Dheirya Agrawal
-2026
-Undergraduate research project focused on urban climate modeling
+spheric09
